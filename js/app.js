@@ -11,7 +11,7 @@ async function Refresh()
   if(!tokenStatus.refreshToken || !tokenStatus.exchangeRefreshToken)
   {
     console.warn("Tokens are not setup, redirecting to complete bootstrap process..");
-    CallToAction('/setup/');
+    CallToAction('/setup');
   }
 
   if(null==tokenGlobal)
