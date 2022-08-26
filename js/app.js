@@ -260,7 +260,7 @@ async function CallToAction(currentUrl)
 {
   switch(currentUrl) {
     case '/setup' || '/setup/':
-      window.location.replace('/setup/');
+      window.location.replace(currentUrl);
       break;
     default:
       // code block
