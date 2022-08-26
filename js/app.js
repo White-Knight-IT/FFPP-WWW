@@ -11,7 +11,7 @@ async function Refresh()
   if(!tokenStatus.refreshToken || !tokenStatus.exchangeRefreshToken)
   {
     console.warn("Tokens are not setup, redirecting to complete bootstrap process..");
-    CallToAction('/setup/initial');
+    CallToAction('/setup');
   }
 
   if(null==tokenGlobal)
@@ -248,9 +248,9 @@ async function Heartbeat()
 
 }
 
-async function LoadUrl(url)
+async function LoadUrl(url, title='FFPP')
 {
-  const nextTitle = 'FFTP - NEXT';
+  const nextTitle = title;
   const nextState = { additionalInformation: 'Updated the URL with JS' };
   window.history.pushState(nextState, nextTitle, url);
   CallToAction(url)
@@ -259,8 +259,8 @@ async function LoadUrl(url)
 async function CallToAction(currentUrl)
 {
   switch(currentUrl) {
-    case '/setup/initial' || '/setup/initial/':
-      window.location.replace('/setup/initial');
+    case '/setup/' || '/setup/':
+      window.location.replace('/setup');
       break;
     default:
       // code block
