@@ -11,7 +11,7 @@ async function Refresh()
   if(!tokenStatus.refreshToken || !tokenStatus.exchangeRefreshToken)
   {
     console.warn("Tokens are not setup, redirecting to complete bootstrap process..");
-    CallToAction('/setup');
+    CallToAction('/setup/');
   }
 
   if(null==tokenGlobal)
@@ -259,8 +259,8 @@ async function LoadUrl(url, title='FFPP')
 async function CallToAction(currentUrl)
 {
   switch(currentUrl) {
-    case '/setup/' || '/setup/':
-      window.location.replace('/setup');
+    case '/setup' || '/setup/':
+      window.location.replace('/setup/');
       break;
     default:
       // code block
