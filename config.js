@@ -3,7 +3,7 @@ by the client. */
 
 const config = {
   auth: {
-    clientId: '938b39c2-c4fd-45ea-bc7e-9bf644ed0017',
+    clientId: '930c58fa-66db-4651-a001-7286c094da4a',
     authority: 'https://login.microsoftonline.com/organizations/',
     redirectUri: '/index.html',
     postLogoutRedirectUri: '/bye.html'
@@ -13,7 +13,7 @@ const config = {
     storeAuthStateInCookie: false
   },
   api: {
-    scopes: ['https://whiteknightit.com.au/f005a7ba-9ead-464e-a78d-53d233a54c51/ffpp-api.access'],
+    scopes: ['https://whiteknightit.com.au/fb38be4e-6446-473d-8da3-e30dfc32dd3f/ffpp-api.access'],
     requiresInit: true
   }
 };
