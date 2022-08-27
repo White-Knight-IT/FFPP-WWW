@@ -13,21 +13,23 @@ async function Refresh()
     console.warn("Tokens are not setup, redirecting to complete bootstrap process..");
     LoadUrl('/setup');
   }
-
-  if(null==tokenGlobal)
+  else
   {
-    await SignIn();
+    if(null==tokenGlobal)
+    {
+      await SignIn();
+    }
+
+    document.getElementById('tenantsDropdownButton').disabled=true;
+    const [] = await Promise.allSettled([
+      ProfileRefresh(), 
+      TenantRefresh()
+    ]);
+
+    document.getElementById('tenantsDropdownButton').disabled=false;
+
+    setInterval(Heartbeat, 120000);
   }
-
-  document.getElementById('tenantsDropdownButton').disabled=true;
-  const [] = await Promise.allSettled([
-		ProfileRefresh(), 
-		TenantRefresh()
-	]);
-
-  document.getElementById('tenantsDropdownButton').disabled=false;
-
-  setInterval(Heartbeat, 120000);
 }
 
 async function BootstrapRefresh()
@@ -253,6 +255,7 @@ async function LoadUrl(url, title='FFPP')
   const nextTitle = title;
   const nextState = { additionalInformation: 'Updated the URL with JS' };
   window.history.pushState(nextState, nextTitle, url);
+  CallToAction(url);
 }
 
 async function CallToAction(currentUrl)
