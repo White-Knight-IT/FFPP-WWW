@@ -18,6 +18,7 @@ async function FetchUrl(url, requestOptions, signIn=true, repeatable=true)
       };
     }
     let response = await fetch(url, requestOptions);
+    console.warn(response);
     try {
       return {
         'json': await response.json(),
