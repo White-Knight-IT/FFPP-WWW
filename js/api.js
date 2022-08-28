@@ -81,11 +81,11 @@ async function CallApi(url,method,signIn)
   }
 }
 
-async function EditProfile(userId,tenantName,tenantDomain, tenantId, tableSize)
+async function EditProfile(userId,tenantName,tenantDomain, tenantId, tableSize, defaultUsage)
 {
   const requestOptions = {
     method: 'PUT',
-    body: JSON.stringify({ userId: userId, lastTenantName: tenantName, lastTenantDomainName: tenantDomain, lastTenantCustomerId: tenantId, defaultPageSize: tableSize})
+    body: JSON.stringify({ userId: userId, lastTenantName: tenantName, lastTenantDomainName: tenantDomain, lastTenantCustomerId: tenantId, defaultPageSize: tableSize, defaultUsageLocation: defaultUsage})
   };
   return await CallApi(`/api/EditUserProfile`, requestOptions)
 }

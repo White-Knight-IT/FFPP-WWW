@@ -127,7 +127,6 @@ async function ProfileRefresh()
 {
   document.getElementById('profileDropdownButton').disabled=true;
   const profile = await AuthMe();
-  console.warn(JSON.stringify(profile));
   if(profile.status == 403)
   {
     console.error("### USER IS FORBIDDEN (403), PLEASE ENSURE CORRECT ROLE ASSIGNED TO USER IN APP ON AZURE AD ###");
@@ -155,10 +154,10 @@ async function ProfileRefresh()
   }
   document.getElementById("profileName").innerText=profile.json.clientPrincipal.name;
   document.getElementById("profileEmail").innerText=profile.json.clientPrincipal.userDetails;
-  document.getElementById("profileRole").innerText=profile.json.clientPrincipal.userRoles[0].charAt(0).toUpperCase()+profile.clientPrincipal.userRoles[0].slice(1);
+  document.getElementById("profileRole").innerText=profile.json.clientPrincipal.userRoles[0].charAt(0).toUpperCase()+profile.json.clientPrincipal.userRoles[0].slice(1);
   document.getElementById("profileDropdown").dataset.tablesize='table'+profile.json.clientPrincipal.defaultPageSize.toString();
   document.getElementById("profileDropdown").dataset.userid=profile.json.clientPrincipal.userId;
-  document.getElementById("profileDropdown").dataset.defaultUsage=profile.json.clientPrincipal.defaultUseageLocation;
+  document.getElementById("profileDropdown").dataset.defaultUsage=profile.json.clientPrincipal.defaultUsageLocation;
 }
 
 function GenerateAvatar(text, foregroundColor, backgroundColor) {
@@ -195,11 +194,11 @@ function EditUserProfile()
 {
   try
   {
-  EditProfile(document.getElementById("profileDropdown").dataset.userid,document.getElementById('tenantFilter').innerText,document.getElementById('tenantFilter').dataset.tenant,document.getElementById('tenantFilter').dataset.tenant,parseInt(document.getElementById("profileDropdown").dataset.tablesize.replace('table','')));
+  EditProfile(document.getElementById("profileDropdown").dataset.userid,document.getElementById('tenantFilter').innerText,document.getElementById('tenantFilter').dataset.tenant,document.getElementById('tenantFilter').dataset.tenant,parseInt(document.getElementById("profileDropdown").dataset.tablesize.replace('table','')),document.getElementById('tenantFilter').dataset.defaultUsage);
   }
   catch(error)
   {
-    console.error(error);
+    console.error(`EditUserProfile error: ${error}`);
   }
 }
 
