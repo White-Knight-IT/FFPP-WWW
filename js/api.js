@@ -18,7 +18,10 @@ async function FetchUrl(url, requestOptions, signIn=true, repeatable=true)
       };
     }
     let responsePayload = await fetch(url, requestOptions);
-    return await responsePayload.json();
+    return {
+      'json': await responsePayload.json(),
+      'statusCode': responsePayload.status
+    }
   }
 
   try 
