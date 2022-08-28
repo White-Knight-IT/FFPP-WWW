@@ -6,7 +6,7 @@ window.addEventListener('popstate', function (event) {
 
 async function Refresh()
 {
-  var tokenStatus = await TokenStatus();
+  var tokenStatus = (await TokenStatus()).json;
 
   if(!tokenStatus.refreshToken || !tokenStatus.exchangeRefreshToken)
   {
@@ -34,7 +34,7 @@ async function Refresh()
 
 async function BootstrapRefresh()
 {
-  var graphUrl = await GraphTokenUrl();
+  var graphUrl = (await GraphTokenUrl()).json;
   if(null != graphUrl.url && graphUrl.url != 'undefined')
   {
     document.getElementById("tokenLink").href=graphUrl.url;
@@ -45,7 +45,7 @@ async function BootstrapRefresh()
 
 async function BootstrapTokenCheck()
 {
-  var tokenStatus = await TokenStatus();
+  var tokenStatus = (await TokenStatus()).json;
 
   if (tokenStatus.refreshToken) {
     if(document.getElementById("grtIcon").classList.contains("bi-slash-square"))
@@ -55,12 +55,12 @@ async function BootstrapTokenCheck()
       document.getElementById("grtContainer").classList.remove("bg-secondary");
       document.getElementById("grtContainer").classList.add("bg-success");
       document.getElementById("instructions").innerHTML='<div class="spinner-border text-warning" role="status"><span class="visually-hidden">Loading...</span></div>';
-      var device = await ExchangeTokenUrlCode()
+      var device = (await ExchangeTokenUrlCode()).json;
       if(null != device.url && device.url != 'undefined')
       {
         document.getElementById("instructions").innerHTML=`Sign in <a id="tokenLink" target="_blank" href="${device.url}" class="a-general-dark">HERE</a> as your Global Admin using code <span id="deviceCode" class="alt-text-dark" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-toggle="tooltip" data-bs-trigger="hover click" title="Copied to clipboard!" onmouseover="navigator.clipboard.writeText(this.innerText)" onclick="navigator.clipboard.writeText(this.innerText)">${device.code}</span></h5>`;
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
           return new bootstrap.Tooltip(tooltipTriggerEl)
         })
         expiresCount= device.expires-30;
@@ -115,7 +115,7 @@ async function ExpireCount()
 async function TenantRefresh()
 {
   document.getElementById('tenantData').innerHTML='';
-  const tenantJson = await GetTenants(true);
+  const tenantJson = (await GetTenants(true)).json;
   var dropItems="";
   for (var i = 0; i < tenantJson.length; i++){
       dropItems+=`<li><a style='border-top: none' class="onclick-highlight panel-section-dark dropdown-item" data-tenant="${tenantJson[i].defaultDomainName}" data-customerid="${tenantJson[i].customerId}" onclick="SelectOption('tenantFilter',this.innerText,this.dataset.tenant, this.dataset.customerid, true)">${tenantJson[i].displayName}</a></li>`; 
@@ -126,7 +126,7 @@ async function TenantRefresh()
 async function ProfileRefresh()
 {
   document.getElementById('profileDropdownButton').disabled=true;
-  const profile = await AuthMe();
+  const profile = (await AuthMe()).json;
   SelectOption('tenantFilter', profile.clientPrincipal.lastTenantName,profile.clientPrincipal.lastTenantDomainName,profile.clientPrincipal.lastTenantCustomerId);
   document.getElementById(`table${profile.clientPrincipal.defaultPageSize.toString()}`).classList.add('toggle-button-active');
   document.getElementById('profileDropdownButton').disabled=false;
@@ -249,7 +249,7 @@ async function SidebarCollapse() {
 
 async function Heartbeat()
 {
-  var heartbeat = await GetHeartbeat();
+  var heartbeat = (await GetHeartbeat()).json;
   console.info(`API Heartbeat: ${JSON.stringify(heartbeat)}`);
 
 }
