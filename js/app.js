@@ -126,32 +126,37 @@ async function TenantRefresh()
 async function ProfileRefresh()
 {
   document.getElementById('profileDropdownButton').disabled=true;
-  const profile = (await AuthMe()).json;
-  SelectOption('tenantFilter', profile.clientPrincipal.lastTenantName,profile.clientPrincipal.lastTenantDomainName,profile.clientPrincipal.lastTenantCustomerId);
-  document.getElementById(`table${profile.clientPrincipal.defaultPageSize.toString()}`).classList.add('toggle-button-active');
-  document.getElementById('profileDropdownButton').disabled=false;
-  if (profile.clientPrincipal.photoData != '')
+  const profile = await AuthMe();
+  if(profile.status == 403)
   {
-    document.getElementById("profileDropdownButton").style=`background-size:100%;background-image:url(data:image/jpg;base64,${profile.clientPrincipal.photoData})`;
+    console.error("### USER IS FORBIDDEN (403), PLEASE ENSURE CORRECT ROLE ASSIGNED TO USER IN APP ON AZURE AD ###");
+    throw "### USER IS FORBIDDEN (403), PLEASE ENSURE CORRECT ROLE ASSIGNED TO USER IN APP ON AZURE AD ###";
+  }
+  SelectOption('tenantFilter', profile.json.clientPrincipal.lastTenantName,profile.json.clientPrincipal.lastTenantDomainName,profile.json.clientPrincipal.lastTenantCustomerId);
+  document.getElementById(`table${profile.json.clientPrincipal.defaultPageSize.toString()}`).classList.add('toggle-button-active');
+  document.getElementById('profileDropdownButton').disabled=false;
+  if (profile.json.clientPrincipal.photoData != '')
+  {
+    document.getElementById("profileDropdownButton").style=`background-size:100%;background-image:url(data:image/jpg;base64,${profile.json.clientPrincipal.photoData})`;
   }
   else
   {
     try
     {
-      document.getElementById("profileDropdownButton").style.backgroundImage=`url(${GenerateAvatar(profile.clientPrincipal.name.split(' ')[0].charAt(0)+profile.clientPrincipal.name.split(' ')[1].charAt(0),'#000000','#ffc107')})`;
+      document.getElementById("profileDropdownButton").style.backgroundImage=`url(${GenerateAvatar(profile.json.clientPrincipal.name.split(' ')[0].charAt(0)+profile.json.clientPrincipal.name.split(' ')[1].charAt(0),'#000000','#ffc107')})`;
     }
     catch
     {
-      document.getElementById("profileDropdownButton").style.backgroundImage=`url(${GenerateAvatar(profile.clientPrincipal.name.charAt(0),'#000000','#ffc107')})`;
+      document.getElementById("profileDropdownButton").style.backgroundImage=`url(${GenerateAvatar(profile.json.clientPrincipal.name.charAt(0),'#000000','#ffc107')})`;
     }
     document.getElementById("profileDropdownButton").style.backgroundSize='100%';
   }
-  document.getElementById("profileName").innerText=profile.clientPrincipal.name;
-  document.getElementById("profileEmail").innerText=profile.clientPrincipal.userDetails;
-  document.getElementById("profileRole").innerText=profile.clientPrincipal.userRoles[0].charAt(0).toUpperCase()+profile.clientPrincipal.userRoles[0].slice(1);
-  document.getElementById("profileDropdown").dataset.tablesize='table'+profile.clientPrincipal.defaultPageSize.toString();
-  document.getElementById("profileDropdown").dataset.userid=profile.clientPrincipal.userId;
-  document.getElementById("profileDropdown").dataset.defaultUsage=profile.clientPrincipal.defaultUseageLocation;
+  document.getElementById("profileName").innerText=profile.json.clientPrincipal.name;
+  document.getElementById("profileEmail").innerText=profile.json.clientPrincipal.userDetails;
+  document.getElementById("profileRole").innerText=profile.json.clientPrincipal.userRoles[0].charAt(0).toUpperCase()+profile.clientPrincipal.userRoles[0].slice(1);
+  document.getElementById("profileDropdown").dataset.tablesize='table'+profile.json.clientPrincipal.defaultPageSize.toString();
+  document.getElementById("profileDropdown").dataset.userid=profile.json.clientPrincipal.userId;
+  document.getElementById("profileDropdown").dataset.defaultUsage=profile.json.clientPrincipal.defaultUseageLocation;
 }
 
 function GenerateAvatar(text, foregroundColor, backgroundColor) {
