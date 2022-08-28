@@ -17,10 +17,27 @@ async function FetchUrl(url, requestOptions, signIn=true, repeatable=true)
         'Content-Type': contentType
       };
     }
-    let responsePayload = await fetch(url, requestOptions);
-    return {
-      'json': await responsePayload.json(),
-      'statusCode': responsePayload.status
+    let response = await fetch(url, requestOptions);
+    try {
+      return {
+        'json': await response.json(),
+        'statusCode': response.status
+      }
+    }
+    catch(error)
+    {
+      if(null != response.status)
+      {
+        return {
+          'json': null,
+          'statusCode': response.status
+        }
+      }
+      
+      return {
+        'json': null,
+        'statusCode': null
+      }
     }
   }
 
