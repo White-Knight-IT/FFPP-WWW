@@ -27,10 +27,16 @@ async function FetchUrl(url, requestOptions, signIn=true, repeatable=true)
     }
     catch(error)
     {
-        return {
-          'json': null,
-          'statusCode': response.status
-        }
+      if(repeatable)
+      {
+        console.error(`Error in API call: ${error} - retrying`)
+        throw error;
+      }
+      
+      return {
+        'json': null,
+        'statusCode': response.status
+      }
     }
   }
 
