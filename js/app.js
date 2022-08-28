@@ -127,8 +127,8 @@ async function ProfileRefresh()
 {
   document.getElementById('profileDropdownButton').disabled=true;
   const profile = await AuthMe();
-  console.warn(profile.satus);
-  if(profile.status == 403)
+  console.warn(profile.satusCode);
+  if(profile.statusCode == 403)
   {
     console.error("### USER IS FORBIDDEN (403), PLEASE ENSURE CORRECT ROLE ASSIGNED TO USER IN APP ON AZURE AD ###");
     throw "### USER IS FORBIDDEN (403), PLEASE ENSURE CORRECT ROLE ASSIGNED TO USER IN APP ON AZURE AD ###";
