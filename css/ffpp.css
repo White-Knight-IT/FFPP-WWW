@@ -10985,6 +10985,54 @@ body {
   height: 120px;
 }
 
+#tooltipClipboard {
+  background: #333;
+  color: white;
+  font-weight: bold;
+  padding: 4px 8px;
+  font-size: 13px;
+  border-radius: 4px;
+  display: none;
+}
+
+#tooltipClipboard[data-show] {
+  display: block;
+}
+
+#tooltipClipboard[data-popper-placement^=top] > #arrowClipboard {
+  bottom: -4px;
+}
+
+#tooltipClipboard[data-popper-placement^=bottom] > #arrowClipboard {
+  top: -4px;
+}
+
+#tooltipClipboard[data-popper-placement^=left] > #arrowClipboard {
+  right: -4px;
+}
+
+#tooltipClipboard[data-popper-placement^=right] > #arrowClipboard {
+  left: -4px;
+}
+
+#arrowClipboard,
+#arrowClipboard::before {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: inherit;
+}
+
+#arrowClipboard {
+  visibility: hidden;
+}
+
+#arrowClipboard::before {
+  visibility: visible;
+  content: "";
+  transform: rotate(45deg);
+}
+
 .dataTable-wrapper.no-header .dataTable-container {
   border-top: 1px solid #d9d9d9;
 }

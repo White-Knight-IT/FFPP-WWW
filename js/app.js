@@ -58,7 +58,11 @@ async function BootstrapTokenCheck()
       var device = await ExchangeTokenUrlCode()
       if(null != device.url && device.url != 'undefined')
       {
-        document.getElementById("instructions").innerHTML=`Sign in <a id="tokenLink" target="_blank" href="${device.url}" class="a-general-dark">HERE</a> as your Global Admin using code <span id="deviceCode" class="alt-text-dark">${device.code}</span></h5>`
+        document.getElementById("instructions").innerHTML=`Sign in <a id="tokenLink" target="_blank" href="${device.url}" class="a-general-dark">HERE</a> as your Global Admin using code <span id="deviceCode" class="alt-text-dark" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-toggle="tooltip" data-bs-trigger="hover click" title="Copied to clipboard!" onmouseover="navigator.clipboard.writeText(this.innerText)" onclick="navigator.clipboard.writeText(this.innerText)">${device.code}</span></h5>`;
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
         expiresCount= device.expires-30;
         setInterval(ExpireCount, 1000);
       }
