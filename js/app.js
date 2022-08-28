@@ -275,6 +275,9 @@ async function CallToAction(currentUrl)
     case '/setup' || '/setup/':
       window.location.replace(currentUrl);
       break;
+    case '/403' || '/403/':
+      window.location.href=currentUrl;
+      break;
     default:
       // code block
   }
