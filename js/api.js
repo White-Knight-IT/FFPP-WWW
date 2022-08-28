@@ -29,7 +29,6 @@ async function FetchUrl(url, requestOptions, signIn=true, repeatable=true)
     {
       if(repeatable)
       {
-        console.error(`Error in API call: ${error} - retrying`)
         throw error;
       }
       
