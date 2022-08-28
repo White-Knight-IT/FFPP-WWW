@@ -18,49 +18,50 @@ async function FetchUrl(url, requestOptions, signIn=true, repeatable=true)
       };
     }
     let response = await fetch(url, requestOptions);
-    console.warn(response);
+
     try {
       return {
         'json': await response.json(),
-        'statusCode': response.status
+        'statusCode': response.status,
+        'ok': response.ok
       }
     }
     catch(error)
     {
-      if(repeatable)
-      {
-        throw error;
-      }
-      
+      console.error(`An error occured parsing HTTP response: ${error}`);
       return {
         'json': null,
-        'statusCode': response.status
+        'statusCode': response.status,
+        'ok': response.ok
       }
     }
   }
 
-  try 
+  var response = await RepeatableFetch(url, requestOptions);
+
+  if(response.ok)
   {
-    return await RepeatableFetch(url, requestOptions);
+    return response;
   }
-  catch (error)
+  else
   {
     if(repeatable)
     {
-      console.error(`Error with url ${url} - ${error} - Retrying`)
-      try
+      console.error(`Error with url ${url} - Retrying`)
+
+      response = await RepeatableFetch(url, requestOptions);
+      
+      if(!response.ok)
       {
-        return await RepeatableFetch(url, requestOptions);
-      }
-      catch(error)
-      {
-        console.error(`Error with url ${url} - ${error} - Retry attempt failed, giving up`)
+        console.error(`Error with url ${url} - Retry attempt failed, giving up`)
       }
     }
     else
     {
       console.error(`Error with url ${url} - ${error} - NOT Retrying`)
     }
+
+    return response;
   }
 }
 
