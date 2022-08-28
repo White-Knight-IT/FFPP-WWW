@@ -132,7 +132,7 @@ async function ProfileRefresh()
   {
     console.error("### USER IS FORBIDDEN (403), PLEASE ENSURE CORRECT ROLE ASSIGNED TO USER IN APP ON AZURE AD ###");
     LoadUrl('/403');
-    throw "### USER IS FORBIDDEN (403), PLEASE ENSURE CORRECT ROLE ASSIGNED TO USER IN APP ON AZURE AD ###";
+    //throw "### USER IS FORBIDDEN (403), PLEASE ENSURE CORRECT ROLE ASSIGNED TO USER IN APP ON AZURE AD ###";
   }
   SelectOption('tenantFilter', profile.json.clientPrincipal.lastTenantName,profile.json.clientPrincipal.lastTenantDomainName,profile.json.clientPrincipal.lastTenantCustomerId);
   document.getElementById(`table${profile.json.clientPrincipal.defaultPageSize.toString()}`).classList.add('toggle-button-active');
