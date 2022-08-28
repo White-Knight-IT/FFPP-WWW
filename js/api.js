@@ -22,7 +22,7 @@ async function FetchUrl(url, requestOptions, signIn=true, repeatable=true)
     try {
       return {
         'json': await response.json(),
-        'statusCode': response.status,
+        'status': response.status,
         'ok': response.ok
       }
     }
@@ -31,7 +31,7 @@ async function FetchUrl(url, requestOptions, signIn=true, repeatable=true)
       console.error(`An error occured parsing HTTP response: ${error}`);
       return {
         'json': null,
-        'statusCode': response.status,
+        'status': response.status,
         'ok': response.ok
       }
     }
