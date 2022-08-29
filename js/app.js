@@ -46,6 +46,7 @@ async function BootstrapRefresh()
 async function BootstrapTokenCheck()
 {
   var tokenStatus = (await TokenStatus()).json;
+  console.info(`Checking token status: ${tokenStatus}`);
 
   if (tokenStatus.refreshToken) {
     if(document.getElementById("grtIcon").classList.contains("bi-slash-square"))
