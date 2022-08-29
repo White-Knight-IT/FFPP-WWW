@@ -389,4 +389,21 @@ li {
     color: #ffc107;
 }
 
+.swagger-ui .errors-wrapper hgroup h4 {
+    color: #fff;
+}
+
+swagger-ui .errors-wrapper .errors h4 {
+    color: #fff;
+}
+
+.swagger-ui .errors-wrapper .errors .message.thrown {
+    color: #fff;
+}
+
+.swagger-ui .errors-wrapper {
+    border: 2px solid #ffc107;
+    background: #ffc1071a;
+}
+
 
