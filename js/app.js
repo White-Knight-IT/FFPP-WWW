@@ -1,6 +1,7 @@
 var expiresCount = 830;
 
 window.addEventListener('popstate', function (event) {
+  console.warn("Window Popstate Event");
 	CallToAction(window.location.href);
 });
 
@@ -11,7 +12,7 @@ async function Refresh()
   if(!tokenStatus.refreshToken || !tokenStatus.exchangeRefreshToken)
   {
     console.warn("Tokens are not setup, redirecting to complete bootstrap process..");
-    LoadUrl('/setup');
+    LoadUrl('/setup/');
   }
   else
   {
@@ -113,15 +114,86 @@ async function ExpireCount()
   }
 }
 
+async function CreateDataTable(headers,jsonValues, id, parentElementId, heading, subheading, replace)
+{
+  var tableTemplate = document.createElement('template');
+  var tableHtml=`<div class="card text-bg-dark modal-bg-dark ps-3 pe-3 pt-2 pb-2 mb-3"><div class="card-header">${heading}</div><div id='${id}-addTable' class="card-body"><h5 class="card-title">${subheading}</h5></div><table id=${id}><thead><tr>`;
+  tableHtml=tableHtml.concat(headers.map(header => `<th>${header}</th>`).join(''),'</tr></thead><tbody>');
+  jsonValues.forEach(obj => {
+    tableHtml=tableHtml.concat('<tr>');
+    Object.entries(obj).forEach(([key,value]) => {
+      tableHtml=tableHtml.concat(`<td data-key="${key}">${value}</td>`);
+    });
+    tableHtml=tableHtml.concat('</tr>');
+  });
+  tableHtml=tableHtml.concat('</tbody></table></div>');
+  tableTemplate.innerHTML=tableHtml;
+  if(replace)
+  {
+    document.getElementById(parentElementId).innerHTML=tableTemplate.content.firstChild.outerHTML;
+  }
+  else
+  {
+    document.getElementById(parentElementId).appendChild(tableTemplate.content.firstChild);
+  }
+  let myTable = new JSTable(document.getElementById(id), {
+    sortable: true,
+    searchable: true,
+    perPage: await ProfileTableSize()
+  });
+  return myTable;
+}
+
 async function TenantRefresh()
 {
   document.getElementById('tenantData').innerHTML='';
   const tenantJson = (await GetTenants(true)).json;
   var dropItems="";
   for (var i = 0; i < tenantJson.length; i++){
-      dropItems+=`<li><a style='border-top: none' class="onclick-highlight panel-section-dark dropdown-item" data-tenant="${tenantJson[i].defaultDomainName}" data-customerid="${tenantJson[i].customerId}" onclick="SelectOption('tenantFilter',this.innerText,this.dataset.tenant, this.dataset.customerid, true)">${tenantJson[i].displayName}</a></li>`; 
+    dropItems+=`<li><a id='allTenants' style='border-top: none' class="onclick-highlight panel-section-dark dropdown-item" data-tenant="${tenantJson[i].defaultDomainName}" data-customerid="${tenantJson[i].customerId}" onclick="SelectOption('tenantFilter',this.innerText,this.dataset.tenant, this.dataset.customerid, true)">${tenantJson[i].displayName}</a></li>`; 
   }
   document.getElementById('tenantData').innerHTML=dropItems;
+}
+
+async function IsAllTenants()
+{
+  while(!document.getElementById('allTenants'))
+  {
+    await new Promise(r => setTimeout(r, 100));
+  }
+  return document.getElementById('tenantFilter').dataset.customerid == 'AllTenants';
+}
+
+async function SelectedTenantDisplayName()
+{
+  while(!document.getElementById('allTenants'))
+  {
+    await new Promise(r => setTimeout(r, 100));
+  }
+  return document.getElementById('tenantFilter').innerText;
+}
+
+async function SelectedTenantDefaultDomain()
+{
+  while(!document.getElementById('allTenants'))
+  {
+    await new Promise(r => setTimeout(r, 100));
+  }
+  return document.getElementById('tenantFilter').dataset.tenant;
+}
+
+async function SelectedTenantCustomerId()
+{
+  while(!document.getElementById('allTenants'))
+  {
+    await new Promise(r => setTimeout(r, 100));
+  }
+  return document.getElementById('tenantFilter').dataset.customerid;
+}
+
+function ProfileTableSize()
+{
+  return parseInt(document.getElementById("profileDropdown").dataset.tablesize.replace('table',''));
 }
 
 async function ProfileRefresh()
@@ -131,8 +203,7 @@ async function ProfileRefresh()
   if(profile.status == 403)
   {
     console.error("### USER IS FORBIDDEN (403), PLEASE ENSURE CORRECT ROLE ASSIGNED TO USER IN APP ON AZURE AD ###");
-    LoadUrl('/403');
-    //throw "### USER IS FORBIDDEN (403), PLEASE ENSURE CORRECT ROLE ASSIGNED TO USER IN APP ON AZURE AD ###";
+    LoadUrl('/403/');
   }
   SelectOption('tenantFilter', profile.json.clientPrincipal.lastTenantName,profile.json.clientPrincipal.lastTenantDomainName,profile.json.clientPrincipal.lastTenantCustomerId);
   document.getElementById(`table${profile.json.clientPrincipal.defaultPageSize.toString()}`).classList.add('toggle-button-active');
@@ -182,6 +253,17 @@ function GenerateAvatar(text, foregroundColor, backgroundColor) {
   return canvas.toDataURL("image/png");
 }
 
+function RandomCharacterString(length) {
+  var result           = '';
+  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789[]!@#$%^&*(){}';
+  var charactersLength = characters.length;
+  for ( var i = 0; i < length; i++ ) {
+    result += characters.charAt(Math.floor(Math.random() * 
+charactersLength));
+ }
+ return result;
+}
+
 function ProfileButtonClick(e, value)
 {
   [].slice.call(document.getElementById('pageSizeGroup').children).forEach(element => element.classList.remove('toggle-button-active'));
@@ -195,7 +277,7 @@ function EditUserProfile()
 {
   try
   {
-  EditProfile(document.getElementById("profileDropdown").dataset.userid,document.getElementById('tenantFilter').innerText,document.getElementById('tenantFilter').dataset.tenant,document.getElementById('tenantFilter').dataset.tenant,parseInt(document.getElementById("profileDropdown").dataset.tablesize.replace('table','')),document.getElementById('tenantFilter').dataset.defaultUsage);
+    EditProfile(document.getElementById("profileDropdown").dataset.userid,document.getElementById('tenantFilter').innerText,document.getElementById('tenantFilter').dataset.tenant,document.getElementById('tenantFilter').dataset.customerid, ProfileTableSize(),document.getElementById('tenantFilter').dataset.defaultUsage);
   }
   catch(error)
   {
@@ -223,6 +305,8 @@ function SelectOption(dropdownButtonId, option='', defaultDomain='', custid='', 
     {
       EditUserProfile();
     }
+
+    CallToAction(window.location.href);
 }
   
 function DropdownFilterFunction(dropdownId, searchInputId) {
@@ -271,14 +355,31 @@ async function LoadUrl(url, title='FFPP')
 
 async function CallToAction(currentUrl)
 {
-  switch(currentUrl) {
-    case '/setup' || '/setup/':
+  console.info(`CallToAction - ${currentUrl}`);
+
+  switch(currentUrl.toLowerCase()) {
+    case `/setup/`:
+      console.info("Setup");
       window.location.replace(currentUrl);
       break;
-    case '/403' || '/403/':
+    case `/403/`:
       window.location.assign(currentUrl);
       break;
+    case `${config.ui.frontEndUrl}/staging/`:
+        console.info("Staging");
+        if(! await IsAllTenants())
+        {
+          var tenants = (await GetTenants(false)).json;
+          var tenantId = await SelectedTenantCustomerId();
+          var tenantDisplayname = await SelectedTenantDisplayName();
+          var tenantDomain = await SelectedTenantDefaultDomain();
+          await CreateDataTable(['0','1','2'],tenants,'usersTable-'+tenantId,'injectableMain',tenantDisplayname+`<br><span class='dt-alt-heading'>${tenantDomain}</span>`,'Users',true)
+        }
+        else
+        {
+  
+        }
+        break;
     default:
-      // code block
   }
 }
