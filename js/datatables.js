@@ -1,6 +1,6 @@
 const JSTableDefaultConfig = {
     perPage: 100,
-    perPageSelect: [25, 50, 100, 200, 500],
+    perPageSelect: [5, 25, 50, 100, 200, 500, 1000],
 
     sortable: true,
     searchable: true,
@@ -36,18 +36,18 @@ const JSTableDefaultConfig = {
 
     // Customise the display text
     labels: {
-        placeholder: "Search...",
-        perPage: "{select} entries per page",
-        noRows: "No entries found",
-        info: "Showing {start} to {end} of {rows} entries",
-        loading: "Loading...",
-        infoFiltered: "Showing {start} to {end} of {rows} entries (filtered from {rowsTotal} entries)"
+        placeholder: "Filter...",
+        perPage: "{select} &nbsp; per page&nbsp;",
+        noRows: "No data",
+        info: "&nbsp;<b>{start}</b> to <b>{end}</b> of <b>{rows}</b>&nbsp;",
+        loading: "",
+        infoFiltered: "&nbsp;<b>{start}</b> to <b>{end}</b> of <b>{rows}&nbsp;</b>"
     },
 
     // Customise the layout
     layout: {
-        top: "{select}{search}",
-        bottom: "{info}{pager}"
+        top: "{search}",
+        bottom: "{select}{info}{pager}"
     },
 
     // server side
@@ -137,14 +137,14 @@ class JSTable {
         // Info placement
         inner = inner.replace(
             "{info}",
-            "<div class='" + options.classes.info + "'></div>"
+            "<div class='font-size-14 " + options.classes.info + "'></div>"
         );
 
         // Per Page Select
         if (options.perPageSelect) {
             var wrap = [
                 "<div class='", options.classes.dropdown, "'>",
-                "<label>", options.labels.perPage, "</label>",
+                "<label class='font-size-14'>", options.labels.perPage, "</label>",
                 "</div>"
             ].join("");
 
@@ -171,8 +171,8 @@ class JSTable {
         // Searchable
         if (options.searchable) {
             var form = [
-                "<div class='", options.classes.search, "'>",
-                "<input class='", options.classes.input, "' placeholder='", options.labels.placeholder, "' type='text'>",
+                "<div class='d-flex ", options.classes.search, "'>",
+                "<span style='border-radius: 0;' class='general-button-color-border general-button-color-bg white-fg input-group-text wh32x34 ps-2'><i class='bi bi-funnel'></i></span><input style='border: none' class='font-size-14 flex-grow-1 ", options.classes.input, "' placeholder='", options.labels.placeholder, "' type='text'>",
                 "</div>"
             ].join("");
 
@@ -190,7 +190,7 @@ class JSTable {
 
         inner = inner.replace(
             "{pager}",
-            "<div class='" + options.classes.pagination + "'></div>"
+            "<div class='font-size-14 " + options.classes.pagination + "'></div>"
         );
 
         this.wrapper.innerHTML = inner;
@@ -575,7 +575,7 @@ class JSTable {
                 if (that.config.addQueryParams) {
                     const url = new URL(window.location.href);
                     url.searchParams.set(that.config.queryParams.page, new_page);
-                    window.history.replaceState(null, null, url);
+                    //window.history.replaceState(null, null, url);
                 }
             }
 
@@ -611,7 +611,7 @@ class JSTable {
                     if (that.config.addQueryParams) {
                         const url = new URL(window.location.href);
                         url.searchParams.set(that.config.queryParams.search, e.target.value);
-                        window.history.replaceState(null, null, url);
+                        //window.history.replaceState(null, null, url);
                     }
                 }
             });
@@ -1065,8 +1065,6 @@ class JSTablePager {
             if (options.firstLast) {
                 ul.appendChild(this.createItem("pager", pages, options.lastText));
             }
-
-
         }
         return ul;
 

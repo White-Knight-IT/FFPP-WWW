@@ -23,12 +23,49 @@ body {
     color: $ffpp-color-dark;
 }
 
+.wh32x34 {
+    height: 32px !important;
+    width: 34px !important;
+}
+
 .highlight-alt-dark-fg {
     color: $ffpp-highlight-alt-dark
 }
 
 .highlight-alt-dark-bg {
     background: $ffpp-highlight-alt-dark
+}
+
+.highlight-dark-fg {
+    color: $ffpp-highlight-dark
+}
+
+.highlight-dark-bg {
+    background: $ffpp-highlight-dark
+}
+
+.white-fg {
+    color: #fff;
+}
+
+.white-bg {
+    background: #fff;
+}
+
+.general-button-color-fg {
+    color: $ffpp-button-dark;
+}
+
+.general-button-color-bg {
+    background: $ffpp-button-dark;
+}
+
+.general-button-color-border {
+    border: solid 1px $ffpp-button-dark;
+}
+
+.font-size-14 {
+    font-size: 14px;
 }
 
 .sidebar {
@@ -270,7 +307,7 @@ body {
     border-bottom: 1px solid $ffpp-bg-dark;
 }
 
- .dt-container{
+.dt-container{
     position:relative;
     display: block;
     width: 100%;
@@ -305,6 +342,11 @@ body {
 }
 .dt-top {
  border-top: none !important;
+ display: block !important;
+ padding: 8px 0px !important;
+ padding-left: 8px !important;
+ margin-bottom: 8px !important;
+ margin-top: 0px !important;
  @extend .dt-bottom;
 }
 .dt-bottom {
@@ -312,9 +354,11 @@ body {
     display:flex;
     justify-content:space-between;
     border-top: 1px solid $ffpp-bg-dark;
+    margin-top: 4px;
 
     .dt-selector {
         padding: 6px;
+        height: 32px;
     }
     .dt-info {
         margin: 7px 0;
@@ -324,7 +368,8 @@ body {
 
 .dt-input {
     padding: 6px 12px;
-    min-width: 300px;
+    min-width: 10px !important;
+    height: 32px;
 }
 
 
@@ -350,12 +395,13 @@ body {
     }
 
     a:hover {
-        background-color: #d9d9d9;
+        background-color: $ffpp-button-dark;
     }
     .active a{
         &, &:focus, &:hover{
-            background-color: #d9d9d9;
+            background-color: $ffpp-button-dark;
             cursor: default;
+            font-weight: bold;
         }
     }
 
@@ -425,6 +471,7 @@ body {
                 border-left: 4px solid transparent;
                 border-right: 4px solid transparent;
                 opacity: 0.2;
+                margin: 2px;
             }
 
             &::before {

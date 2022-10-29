@@ -44,6 +44,14 @@ async function BootstrapRefresh()
   setInterval(BootstrapTokenCheck, 1337);
 }
 
+async function PrimeToolTips()
+{
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+  })
+}
+
 async function BootstrapTokenCheck()
 {
   var tokenStatus = (await TokenStatus()).json;
@@ -61,10 +69,7 @@ async function BootstrapTokenCheck()
       if(null != device.url && device.url != 'undefined')
       {
         document.getElementById("instructions").innerHTML=`Sign in <a id="tokenLink" target="_blank" href="${device.url}" class="a-general-dark">HERE</a> as your Global Admin using code <span id="deviceCode" class="alt-text-dark" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-toggle="tooltip" data-bs-trigger="hover click" title="Copied to clipboard!" onmouseover="navigator.clipboard.writeText(this.innerText)" onclick="navigator.clipboard.writeText(this.innerText)">${device.code}</span></h5>`;
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        tooltipTriggerList.map(function (tooltipTriggerEl) {
-          return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
+        PrimeToolTips();
         expiresCount= device.expires-30;
         setInterval(ExpireCount, 1000);
       }
@@ -114,34 +119,101 @@ async function ExpireCount()
   }
 }
 
-async function CreateDataTable(headers,jsonValues, id, parentElementId, heading, subheading, replace)
+async function CreateDataTable(headers,jsonValues, id, parentElementId, heading, altHeading="", subheading="", replace = true, actionButtonHtml="")
 {
   var tableTemplate = document.createElement('template');
-  var tableHtml=`<div class="card text-bg-dark modal-bg-dark ps-3 pe-3 pt-2 pb-2 mb-3"><div class="card-header">${heading}</div><div id='${id}-addTable' class="card-body"><h5 class="card-title">${subheading}</h5></div><table id=${id}><thead><tr>`;
-  tableHtml=tableHtml.concat(headers.map(header => `<th>${header}</th>`).join(''),'</tr></thead><tbody>');
-  jsonValues.forEach(obj => {
-    tableHtml=tableHtml.concat('<tr>');
-    Object.entries(obj).forEach(([key,value]) => {
-      tableHtml=tableHtml.concat(`<td data-key="${key}">${value}</td>`);
+  var tableTemplateLoading = document.createElement('template');
+  var tableHtml=`<div id='${id}-parent' class='card text-bg-dark modal-bg-dark ps-3 pe-3 pt-2 pb-2 mb-3'><div class='d-flex ps-2 pe-0 card-header'><span class='col'>${heading}${altHeading}</span>${actionButtonHtml}</div><div id='${id}-addTable' class='card-body p-2'><h5 class='card-title'>${subheading}</h5></div><table id='${id}'><thead><tr>`;
+  tableTemplateLoading.innerHTML=tableHtml.concat("<div class='d-flex row justify-content-center'><div class='spinner-border mb-4 highlight-alt-dark-fg' style='width: 3rem; height: 3rem;' role='status'><span class='visually-hidden'>Loading...</span></div></div></div>");
+
+  async function InjectHtml(template, primeToolTips=false, loading=true)
+  {
+    if(replace)
+    {
+      document.getElementById(parentElementId).innerHTML=template.content.firstChild.outerHTML;
+    }
+    else if(loading)
+    {
+      document.getElementById(parentElementId).appendChild(template.content.firstChild);
+    }
+    else
+    {
+      document.getElementById(`${id}-parent`).outerHTML=template.content.firstChild.outerHTML;
+    }
+
+    if(primeToolTips)
+    {
+      await PrimeToolTips();
+    }
+  }
+
+  async function FillTable()
+  {
+    var worker_fn = function (e) {
+      jsonValues = e.data.j;
+      tableHtml = e.data.t;
+      headers = e.data.h;
+      tableHtml = tableHtml.concat(headers.map(header => `<th>${header}</th>`).join(''),'</tr></thead><tbody>');
+    for(var i=0; i<10000; i++)
+    {
+      console.info(i);
+    jsonValues.forEach(obj => {
+      tableHtml=tableHtml.concat('<tr>');
+      Object.entries(obj).forEach(([key,value]) => {
+        tableHtml=tableHtml.concat(`<td class='font-size-14' data-key='${key}' data-bs-toggle='tooltip' data-bs-placement='bottom' data-bs-toggle='tooltip' data-bs-trigger='hover'>${value}</td>`);
+      });
+      tableHtml=tableHtml.concat('</tr>');
     });
-    tableHtml=tableHtml.concat('</tr>');
-  });
-  tableHtml=tableHtml.concat('</tbody></table></div>');
-  tableTemplate.innerHTML=tableHtml;
-  if(replace)
-  {
-    document.getElementById(parentElementId).innerHTML=tableTemplate.content.firstChild.outerHTML;
+    jsonValues.forEach(obj => {
+      tableHtml=tableHtml.concat('<tr>');
+      Object.entries(obj).forEach(([key,value]) => {
+        tableHtml=tableHtml.concat(`<td class='font-size-14' data-key='${key}' data-bs-toggle='tooltip' data-bs-placement='bottom' data-bs-toggle='tooltip' data-bs-trigger='hover'>${value}</td>`);
+      });
+      tableHtml=tableHtml.concat('</tr>');
+    });
+    jsonValues.forEach(obj => {
+      tableHtml=tableHtml.concat('<tr>');
+      Object.entries(obj).forEach(([key,value]) => {
+        tableHtml=tableHtml.concat(`<td class='font-size-14' data-key='${key}' data-bs-toggle='tooltip' data-bs-placement='bottom' data-bs-toggle='tooltip' data-bs-trigger='hover'>${value}</td>`);
+      });
+      tableHtml=tableHtml.concat('</tr>');
+    });
+    jsonValues.forEach(obj => {
+      tableHtml=tableHtml.concat('<tr>');
+      Object.entries(obj).forEach(([key,value]) => {
+        tableHtml=tableHtml.concat(`<td class='font-size-14' data-key='${key}' data-bs-toggle='tooltip' data-bs-placement='bottom' data-bs-toggle='tooltip' data-bs-trigger='hover'>${value}</td>`);
+      });
+      tableHtml=tableHtml.concat('</tr>');
+    });
+    }
+    postMessage(JSON.parse(`{"result":${JSON.stringify(tableHtml)}}`));
+    console.warn("Web Worker Finished");
+    }
+
+    var blob = new Blob(["onmessage ="+worker_fn.toString()], { type: "text/javascript" });
+
+    var worker = new Worker(window.URL.createObjectURL(blob));
+
+    worker.onmessage = async function(e) 
+    {
+      tableHtml=e.data.result;
+      tableHtml=tableHtml.concat('</tbody></table></div>');
+      tableTemplate.innerHTML=tableHtml;
+
+      /*await InjectHtml(tableTemplate,true, false);
+      let myTable = new JSTable(document.getElementById(id), {
+        sortable: true,
+        searchable: true,
+        perPage: ProfileTableSize()
+      });*/
+    };
+    worker.postMessage({t: tableHtml,
+    j: jsonValues,
+    h: headers});
   }
-  else
-  {
-    document.getElementById(parentElementId).appendChild(tableTemplate.content.firstChild);
-  }
-  let myTable = new JSTable(document.getElementById(id), {
-    sortable: true,
-    searchable: true,
-    perPage: await ProfileTableSize()
-  });
-  return myTable;
+
+  await InjectHtml(tableTemplateLoading);
+  await FillTable();
 }
 
 async function TenantRefresh()
@@ -253,17 +325,6 @@ function GenerateAvatar(text, foregroundColor, backgroundColor) {
   return canvas.toDataURL("image/png");
 }
 
-function RandomCharacterString(length) {
-  var result           = '';
-  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789[]!@#$%^&*(){}';
-  var charactersLength = characters.length;
-  for ( var i = 0; i < length; i++ ) {
-    result += characters.charAt(Math.floor(Math.random() * 
-charactersLength));
- }
- return result;
-}
-
 function ProfileButtonClick(e, value)
 {
   [].slice.call(document.getElementById('pageSizeGroup').children).forEach(element => element.classList.remove('toggle-button-active'));
@@ -367,13 +428,15 @@ async function CallToAction(currentUrl)
       break;
     case `${config.ui.frontEndUrl}/staging/`:
         console.info("Staging");
+        document.getElementById('injectableMain').innerHTML='';
         if(! await IsAllTenants())
         {
           var tenants = (await GetTenants(false)).json;
           var tenantId = await SelectedTenantCustomerId();
           var tenantDisplayname = await SelectedTenantDisplayName();
           var tenantDomain = await SelectedTenantDefaultDomain();
-          await CreateDataTable(['0','1','2'],tenants,'usersTable-'+tenantId,'injectableMain',tenantDisplayname+`<br><span class='dt-alt-heading'>${tenantDomain}</span>`,'Users',true)
+          CreateDataTable(['Display Name','Email','User Type','Enabled','AD Synced','Licenses'],tenants,tenantId,'injectableMain',tenantDisplayname,`<span style='margin-left: 0px' class='row dt-alt-heading'>${tenantDomain}</span>`,"<span class='highlight-dark-fg'>Users</span>",false,"<button style='max-width:120px' class='col defy-justify-right btn btn-secondary general-button shadow-none'><i class='bi bi-plus-circle highlight-dark-fg'></i>&nbsp;&nbsp;Add User</button>");
+          CreateDataTable(['Display Name','Email','User Type','Enabled','AD Synced','Licenses'],tenants,tenantId+'2','injectableMain',tenantDisplayname,`<span style='margin-left: 0px' class='row dt-alt-heading'>${tenantDomain}</span>`,"<span class='highlight-dark-fg'>Users</span>",false,"<button style='max-width:120px' class='col defy-justify-right btn btn-secondary general-button shadow-none'><i class='bi bi-plus-circle highlight-dark-fg'></i>&nbsp;&nbsp;Add User</button>");
         }
         else
         {
